@@ -22,6 +22,9 @@ TeamMate : 서종원 (충북대학교 3학년 소프트웨어학과 재학)
 : Image로 부터 일어나는 개인정보 유출 피해의 최소화
 
 4. Project 적용분야
+
   4-1. Instagram, Facebook과 같은 SNS
+  
   4-2. Naver MYBOX, Google Cloud와 같은 Cloud 서비스
+  
   4-3. SNOW, SODA와 같은 카메라 어플
