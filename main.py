@@ -7,3 +7,8 @@ from pydantic import BaseModel
 import requests
 # async / await 비동기 처리가능
 app = FastAPI()
+
+
+@app.get("/")
+def run():
+    return FileResponse('index.html')
