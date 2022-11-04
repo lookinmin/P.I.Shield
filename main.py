@@ -28,13 +28,12 @@ def func(filenametemp):
                                width_ths=0.5,slope_ths=0.3 ) #최소사이즈, 텍스트 최소인식률, 작아질수록 인식 업 , ,박스 합쳐지는 범위
     # 찾은 텍스트를 txt 포맷으로 변경
     result = reader.recognize(filenametemp, text_detect_result[0][0],text_detect_result[1][0],batch_size=4)
-    print("AI 작업 완료")
 
     registNum = '(\d{6}[ ,-]-?[1-4]\d{7})|(\d{6}[ ,-]?[1-4])'
-    name = '(^[가-힣]{2,3}$)'
     account = '([0-9,\-]{3,9}\-[0-9,\-]{2,6}\-[0-9,\-])'
-    address1 = '(([가-힣]+(시|도)|[서울]|[인천]|[대구]|[광주]|[부산]|[울산])( |)[가-힣]+(시|군|구))'
+    address1 = '(([가-힣]+(시|도)|[서울]|[인천]|[대구]|[광주]|[부산]|[울산])+( |)[가-힣]+(시|군|구))'
     address2 = '(([가-힣]+(d|d(,|.)d|)+(읍|면|동|가|리))(^구|)((d(~|-)d|d)(가|리|)|))([ ](산(d(~|-)d|d))|)|(([가-힣]|(d(~|-)d)|d)+(로|길))'
+    address3 = '([가-힣]*\s?[\d]+(동)\s?[\d]+(호)|[\d]+(호)[\s\S]*)'
     phone = '([O\d]{2,3}[ ,-]-?[O|\d]{2,4}[ ,-]-?[O|\d]{4})'
     email = '(([\w!-_\.])*@([\w!-_\.]))'
     carNum1 = '^[가-힣]{2}\d{2}[가-힣]{1}\d{4}$'
@@ -61,6 +60,8 @@ def func(filenametemp):
                 elif re.match(address1, str(i[1])) != None:
                     rounded_rectangle(draw, i[0], fill=255)
                 elif re.match(address2, str(i[1])) != None:
+                    rounded_rectangle(draw, i[0], fill=255)
+                elif re.match(address3, str(i[1])) != None:
                     rounded_rectangle(draw, i[0], fill=255)
                 elif re.match(phone, str(i[1]).replace(" ",'')) != None:
                     rounded_rectangle(draw, i[0], fill=255)
