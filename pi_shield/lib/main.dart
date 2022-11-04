@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 //import 'package:path/path.dart' show join;
 //import 'package:path_provider/path_provider.dart';
@@ -13,6 +14,7 @@ import 'splash_screen.dart';
 import 'package:image/image.dart' as IMG;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dio/dio.dart';
 
 void main() => runApp(const MyApp());
 
@@ -43,8 +45,15 @@ class _UseCameraState extends State<UseCamera> {
   final picker = ImagePicker();
   int ratioMode = 0;
 
+  bool flag = true;
+
+  String blurUrl = "";
+
   //찍은 사진을 갤러리에 저장
   _save(BuildContext context, File? image) async {
+    setState(() {
+      flag = !flag;
+    });
     var now = DateTime.now();
     String formatDate = DateFormat('yyyyMMdd_HHmmss').format(now);
     List<int> bytes = await image!.readAsBytes();
@@ -59,42 +68,38 @@ class _UseCameraState extends State<UseCamera> {
     Navigator.pop(context);
   }
 
-  // _cropImage(mode, File image) async {
-  //   if (mode == 1) {
-  //     print('asdfasdf');
-  //     setState(() {
-  //       copyImage1 =
-  //           ResizeImage(Image.file(image).image, height: 100, width: 100);
-  //     });
-  //   }
-  // }
-
   void _callAPI() async {
-    // final url = Uri.parse(uri);
-    // final response = await http.post(url, body: {
-    //   'img': '사진',
-    // });
-
-    // print("response body : ${response.body}");
     print("CALL API");
 
-    // File imageFileList = File(_image!.path);
+    List<int> bytes = await _image!.readAsBytes();
+    final originImg = IMG.decodeImage(bytes);
+    IMG.Image fixedImg;
+    fixedImg = IMG.copyRotate(originImg!, 0);
+    final fixedFile = await _image!.writeAsBytes(IMG.encodeJpg(fixedImg));
 
-    var request = new http.MultipartRequest(
-        "POST",
-        Uri.parse(
-            'https://tender-pianos-learn-175-205-84-241.loca.lt/uploadfile/'));
+    setState(() {
+      _image = fixedFile;
+    });
 
-    String str = _image!.path;
-    var strSplit = str.split('/');
+    var dio = Dio();
+    var formData = FormData.fromMap({
+      'file':
+          await MultipartFile.fromFile(fixedFile.path, filename: fixedFile.path)
+    });
+    var response = await dio
+        .post('https://late-jokes-try-175-205-84-241.loca.lt/uploadfile/',
+            data: formData)
+        .then((value) {
+      var result = dio.download(
+          'https://late-jokes-try-175-205-84-241.loca.lt/downloadfile/${value.data['fileurl']}',
+          _image!.path);
 
-    request.fields['file'] = _image!.path;
-
-    print('${strSplit.last}');
-
-    request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
-
-    var response = await request.send();
+      setState(() {
+        blurUrl =
+            'https://late-jokes-try-175-205-84-241.loca.lt/downloadfile/${value.data['fileurl']}';
+        flag = false;
+      });
+    });
   }
 
   @override
@@ -112,10 +117,22 @@ class _UseCameraState extends State<UseCamera> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Ping-pong',
-          style:
-              TextStyle(color: Color.fromARGB(255, 6, 29, 149), fontSize: 15),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              'Ping-pong',
+              style: TextStyle(
+                  color: Color.fromARGB(255, 6, 29, 149), fontSize: 15),
+            ),
+            Text(
+              'P.I.\n Shield',
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                  color: Color.fromARGB(255, 6, 29, 149), fontSize: 15),
+            )
+          ],
         ),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -126,7 +143,7 @@ class _UseCameraState extends State<UseCamera> {
         children: [
           //우측 상단 블러 저장
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -134,6 +151,7 @@ class _UseCameraState extends State<UseCamera> {
                 InkWell(
                   onTap: () {
                     //api 호출
+
                     _callAPI();
                   },
                   child: Column(
@@ -168,12 +186,19 @@ class _UseCameraState extends State<UseCamera> {
                                   actions: [
                                     OutlinedButton(
                                         onPressed: () {
+                                          setState(() {
+                                            flag = true;
+                                          });
                                           _save(context, _image);
                                         },
                                         child: Text("저장")),
                                     OutlinedButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, 'Cancel'),
+                                        onPressed: () {
+                                          setState(() {
+                                            flag = true;
+                                          });
+                                          Navigator.pop(context, 'Cancel');
+                                        },
                                         child: Text("취소")),
                                   ],
                                 ));
@@ -211,15 +236,29 @@ class _UseCameraState extends State<UseCamera> {
           Camera_Gallery(getImage),
           const SizedBox(
             height: 40,
-          )
+          ),
+
+          // const Text('당신의 소중한 개인정보')
         ],
       )),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.transparent,
+        elevation: 0.0,
+        child: Container(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+            child: const Text(
+              '©Copyright 2022. 핑퐁(Ping-pong)',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Color.fromARGB(255, 174, 174, 174), fontSize: 15),
+            )),
+      ),
     );
   }
 
   Container Camera_Gallery(Future<dynamic> getImage(ImageSource imageSource)) {
     return Container(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,8 +267,11 @@ class _UseCameraState extends State<UseCamera> {
             children: [
               IconButton(
                 onPressed: () {
-                  getImage(ImageSource.camera).then((value) => _callAPI());
-                  ;
+                  setState(() {
+                    getImage(ImageSource.camera);
+                    flag = true;
+                  });
+                  // _callAPI();
                 },
                 icon: const Icon(
                   Icons.photo_camera_outlined,
@@ -246,6 +288,9 @@ class _UseCameraState extends State<UseCamera> {
               IconButton(
                   onPressed: () {
                     getImage(ImageSource.gallery);
+                    setState(() {
+                      flag = true;
+                    });
                   },
                   icon: const Icon(Icons.photo_library_outlined,
                       color: Color.fromARGB(255, 6, 29, 149)),
@@ -271,7 +316,13 @@ class _UseCameraState extends State<UseCamera> {
         child: Image.asset('images/logo.png'),
       );
     } else {
-      return Center(child: Image.file(_image!));
+      return Center(
+          child: flag
+              ? Image.file(File(_image!.path))
+              : CachedNetworkImage(
+                  imageUrl: blurUrl,
+                ));
+      //Image.file(File(_image!.path)
     }
   }
 }
