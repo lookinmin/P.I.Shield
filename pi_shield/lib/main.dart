@@ -11,6 +11,9 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'splash_screen.dart';
 import 'package:image/image.dart' as IMG;
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() => runApp(const MyApp());
 
@@ -67,6 +70,28 @@ class _UseCameraState extends State<UseCamera> {
   //   }
   // }
 
+  void _callAPI() async {
+  // final url = Uri.parse(uri);
+  // final response = await http.post(url, body: {
+  //   'img': '사진',
+  // });
+
+  // print("response body : ${response.body}");
+  print("CALL API");
+
+  File imageFileList = File(_image!.path);
+
+  var request = new http.MultipartRequest("POST", Uri.parse(유알엘));
+
+  request.fields['parameter'] = '보내고 싶은 파라미터';
+
+  request.files.add(await http.MultipartFile.fromPath('imageFileList', _image!.path));
+
+
+  var response = await request.send();
+}
+
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -102,7 +127,10 @@ class _UseCameraState extends State<UseCamera> {
               children: [
                 //api 호출 버튼
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    //api 호출
+                    _callAPI();
+                  },
                   child: Column(
                     children: [
                       Image.asset(

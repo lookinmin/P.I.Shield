@@ -45,6 +45,7 @@ dependencies:
   timer_builder: ^2.0.0
   intl: ^0.17.0
   image: ^3.2.2
+  http: ^0.13.5
 
 
 dev_dependencies:
