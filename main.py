@@ -23,9 +23,15 @@ def func(filenametemp):
             temp_xy.append(temp_tuple)
         draw.polygon(temp_xy, fill=fill)
 
+    img = Image.open(filenametemp)
     # 텍스트 찾는 AI
-    text_detect_result = reader.detect(filenametemp, min_size=3, text_threshold=0.3, low_text=0.4, link_threshold=0.1,
+    if (img.size[0]//100)*(img.size[1]//100)>400:
+        text_detect_result = reader.detect(filenametemp, min_size=3, text_threshold=0.3, low_text=0.4, link_threshold=0.1,
                                width_ths=0.3 ) #최소사이즈, 텍스트 최소인식률, 작아질수록 인식 업 , ,박스 합쳐지는 범위
+    else:
+        text_detect_result = reader.detect(filenametemp, min_size=3, text_threshold=0.3, low_text=0.4,
+                                           link_threshold=0.1,
+                                           width_ths=0.5)  # 최소사이즈, 텍스트 최소인식률, 작아질수록 인식 업 , ,박스 합쳐지는 범위
     # 찾은 텍스트를 txt 포맷으로 변경
     result = reader.recognize(filenametemp, text_detect_result[0][0],text_detect_result[1][0],batch_size=4)
 
@@ -39,7 +45,6 @@ def func(filenametemp):
     carNum1 = '^[가-힣]{2}\d{2}[가-힣]{1}\d{4}$'
     carNum2 = '^\d{2,3}[가-힣]{1}\d{4}$'
 
-    img = Image.open(filenametemp)
 
     mask = Image.new('L', img.size, 0)
     draw = ImageDraw.Draw(mask)
@@ -72,8 +77,7 @@ def func(filenametemp):
                 elif re.match(carNum2, str(i[1]).replace(" ",'')) != None:
                     rounded_rectangle(draw, i[0], fill=255)
                 else:
-                    pass
-                    # print(i)
+                    print(i)
                     # print(str(i[1]).replace(" ",''))
                     # temp_xy = []
                     # for i in i[0]:
