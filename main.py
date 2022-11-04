@@ -2,6 +2,7 @@ import os
 from re import template
 from urllib import request
 
+import numpy as np
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
@@ -12,6 +13,8 @@ import cv2
 import matplotlib.pyplot as plt
 from PIL import ImageFont, ImageDraw, Image, ImageFilter
 import re
+from fastapi import UploadFile, File
+
 # async / await 비동기 처리가능
 app = FastAPI()
 
@@ -19,8 +22,6 @@ app = FastAPI()
 @app.get("/")
 def run():
     return FileResponse('index.html')
-
-
 
 # this needs to run only once to load the model into memory
 reader = easyocr.Reader(['ko', 'en'])
@@ -35,10 +36,9 @@ def func(filenametemp):
     phone = '(\d{2,3}[ ,-]-?\d{2,4}[ ,-]-?\d{4})'
     email = '(([\w!-_\.])*@([\w!-_\.])*\.[\w]{2,3})'
 
-
     img = cv2.imread(filenametemp)
-    img = Image.fromarray(img)
-    font = ImageFont.truetype('malgun.ttf', 50)
+    img = Image.fromarray(img) #PIL형태로 변환
+    font = ImageFont.truetype('malgun.ttf', 50) #폰트 지정
     draw = ImageDraw.Draw(img)
 
     def rounded_rectangle(draw, xy, rad, fill=None):
@@ -78,20 +78,21 @@ def func(filenametemp):
             draw.rectangle(((x, y), (x + w, y + h)), outline='red', width=2)
             draw.text((int((x + x + w)/2), y-2), str(i[1]), font=font, fill='red')
 
-
     plt.figure(figsize=(20, 20))
+    img = np.array(img)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     plt.imshow(img)
     plt.show()
 
-
-from fastapi import UploadFile, File
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
-    temp_file=open(str(file.filename),'wb+')
+    temp_file = open(str(file.filename),'wb+')
     temp_file.write(file.file.read())
     func(file.filename)
-    img = cv2.imread(file.filename)
-    img = Image.fromarray(img)
-    plt.imshow(img)
-    plt.show()
+    # img = cv2.imread(file.filename)
+    #img = Image.fromarray(img)
+    # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # plt.imshow(img)
+    # plt.show()
+
     return {"filename": file.filename}
