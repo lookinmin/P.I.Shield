@@ -48,6 +48,7 @@ class _UseCameraState extends State<UseCamera> {
   bool flag = true;
 
   String blurUrl = "";
+  String apiUrl = 'https://hungry-seas-sniff-175-205-84-241.loca.lt';
 
   //찍은 사진을 갤러리에 저장
   _save(BuildContext context, File? image) async {
@@ -86,17 +87,13 @@ class _UseCameraState extends State<UseCamera> {
       'file':
           await MultipartFile.fromFile(fixedFile.path, filename: fixedFile.path)
     });
-    var response = await dio
-        .post('https://late-jokes-try-175-205-84-241.loca.lt/uploadfile/',
-            data: formData)
-        .then((value) {
+    var response =
+        await dio.post('$apiUrl/uploadfile/', data: formData).then((value) {
       var result = dio.download(
-          'https://late-jokes-try-175-205-84-241.loca.lt/downloadfile/${value.data['fileurl']}',
-          _image!.path);
+          '$apiUrl/downloadfile/${value.data['fileurl']}', _image!.path);
 
       setState(() {
-        blurUrl =
-            'https://late-jokes-try-175-205-84-241.loca.lt/downloadfile/${value.data['fileurl']}';
+        blurUrl = '$apiUrl/downloadfile/${value.data['fileurl']}';
         flag = false;
       });
     });
