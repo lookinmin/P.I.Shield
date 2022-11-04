@@ -58,13 +58,13 @@ def func(filenametemp):
                     rounded_rectangle(draw, i[0], fill=255)
                 elif re.match(account, str(i[1]).replace(" ",'')) != None:
                     rounded_rectangle(draw, i[0], fill=255)
-                elif re.match(address1, str(i[1]).replace(" ",'')) != None:
+                elif re.match(address1, str(i[1])) != None:
                     rounded_rectangle(draw, i[0], fill=255)
-                elif re.match(address2, str(i[1]).replace(" ",'')) != None:
+                elif re.match(address2, str(i[1])) != None:
                     rounded_rectangle(draw, i[0], fill=255)
                 elif re.match(phone, str(i[1]).replace(" ",'')) != None:
                     rounded_rectangle(draw, i[0], fill=255)
-                elif re.match(email, str(i[1]).replace(" ",'')) != None:
+                elif re.match(email, str(i[1])) != None:
                     rounded_rectangle(draw, i[0], fill=255)
                 elif re.match(carNum1, str(i[1]).replace(" ",'')) != None:
                     rounded_rectangle(draw, i[0], fill=255)
