@@ -40,7 +40,7 @@ class _SplashState extends State<Splash> {
             Flexible(
                 flex: 1,
                 child: Text(
-                  "© Copyright 2022, 핑퐁(Ping-pong)",
+                  "©Copyright 2022. 핑퐁(Ping-pong)",
                   style: TextStyle(fontSize: 15, color: Colors.white),
                 )),
           ],
