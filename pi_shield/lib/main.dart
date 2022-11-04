@@ -3,18 +3,15 @@ import 'dart:ffi';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-//import 'package:path/path.dart' show join;
-//import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'splash_screen.dart';
 import 'package:image/image.dart' as IMG;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_gif/flutter_gif.dart';
 
 void main() => runApp(const MyApp());
 
@@ -39,7 +36,7 @@ class UseCamera extends StatefulWidget {
   _UseCameraState createState() => _UseCameraState();
 }
 
-class _UseCameraState extends State<UseCamera> {
+class _UseCameraState extends State<UseCamera> with TickerProviderStateMixin {
   File? _image;
 
   final picker = ImagePicker();
@@ -48,6 +45,10 @@ class _UseCameraState extends State<UseCamera> {
   bool flag = true;
 
   String blurUrl = "";
+  String apiUrl = 'https://little-ravens-do-175-205-84-241.loca.lt';
+
+  bool callFlag = true;
+  late FlutterGifController controller;
 
   //찍은 사진을 갤러리에 저장
   _save(BuildContext context, File? image) async {
@@ -86,19 +87,28 @@ class _UseCameraState extends State<UseCamera> {
       'file':
           await MultipartFile.fromFile(fixedFile.path, filename: fixedFile.path)
     });
-    var response = await dio
-        .post('https://late-jokes-try-175-205-84-241.loca.lt/uploadfile/',
-            data: formData)
-        .then((value) {
+    var response =
+        await dio.post('$apiUrl/uploadfile/', data: formData).then((value) {
       var result = dio.download(
-          'https://late-jokes-try-175-205-84-241.loca.lt/downloadfile/${value.data['fileurl']}',
-          _image!.path);
+          '$apiUrl/downloadfile/${value.data['fileurl']}', _image!.path);
 
       setState(() {
-        blurUrl =
-            'https://late-jokes-try-175-205-84-241.loca.lt/downloadfile/${value.data['fileurl']}';
-        flag = false;
+        callFlag = true;
+        blurUrl = '$apiUrl/downloadfile/${value.data['fileurl']}';
       });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller = FlutterGifController(vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.repeat(
+        min: 0,
+        max: 53,
+        period: const Duration(milliseconds: 2000),
+      );
     });
   }
 
@@ -151,7 +161,10 @@ class _UseCameraState extends State<UseCamera> {
                 InkWell(
                   onTap: () {
                     //api 호출
-
+                    setState(() {
+                      flag = false;
+                      callFlag = false;
+                    });
                     _callAPI();
                   },
                   child: Column(
@@ -263,43 +276,57 @@ class _UseCameraState extends State<UseCamera> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    getImage(ImageSource.camera);
-                    flag = true;
-                  });
-                  // _callAPI();
-                },
-                icon: const Icon(
-                  Icons.photo_camera_outlined,
-                  color: Color.fromARGB(255, 6, 29, 149),
+          InkWell(
+            onTap: () => setState(() {
+              getImage(ImageSource.gallery);
+              flag = true;
+            }),
+            child: Column(
+              children: [
+                Image.asset(
+                  'images/gallery.png',
+                  fit: BoxFit.fill,
+                  width: 40,
+                  height: 40,
                 ),
-                iconSize: 40,
-              ),
-              const Text('Camera',
-                  style: TextStyle(fontWeight: FontWeight.bold))
-            ],
+                const SizedBox(
+                  height: 5,
+                ),
+                const Text(
+                  'Gallery',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
           ),
-          Column(
-            children: [
-              IconButton(
-                  onPressed: () {
-                    getImage(ImageSource.gallery);
-                    setState(() {
-                      flag = true;
-                    });
-                  },
-                  icon: const Icon(Icons.photo_library_outlined,
-                      color: Color.fromARGB(255, 6, 29, 149)),
-                  iconSize: 35),
-              const Text(
-                'Gallery',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              )
-            ],
+          InkWell(
+            onTap: () => setState(() {
+              getImage(ImageSource.camera);
+              flag = true;
+            }),
+            child: Column(
+              children: [
+                Image.asset(
+                  'images/camera.png',
+                  fit: BoxFit.fill,
+                  width: 40,
+                  height: 40,
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                const Text(
+                  'Camera',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -319,10 +346,13 @@ class _UseCameraState extends State<UseCamera> {
       return Center(
           child: flag
               ? Image.file(File(_image!.path))
-              : CachedNetworkImage(
-                  imageUrl: blurUrl,
-                ));
-      //Image.file(File(_image!.path)
+              : !callFlag
+                  ? GifImage(
+                      image: const AssetImage("images/gif.gif"),
+                      controller: controller)
+                  : CachedNetworkImage(
+                      imageUrl: blurUrl,
+                    ));
     }
   }
 }

@@ -46,6 +46,7 @@ dependencies:
   intl: ^0.17.0
   image: ^3.2.2
   http: ^0.13.5
+  flutter_gif: ^0.0.4
 
 
 
