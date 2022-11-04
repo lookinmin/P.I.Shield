@@ -83,7 +83,7 @@ class _UseCameraState extends State<UseCamera> {
     var request = new http.MultipartRequest(
         "POST",
         Uri.parse(
-            'https://purple-poets-send-175-205-84-241.loca.lt/uploadfile/'));
+            'https://tender-pianos-learn-175-205-84-241.loca.lt/uploadfile/'));
 
     String str = _image!.path;
     var strSplit = str.split('/');
@@ -208,51 +208,56 @@ class _UseCameraState extends State<UseCamera> {
           showImage(size),
 
           //하단 카메라 및 갤러리 박스
-          Container(
-            padding: const EdgeInsets.only(top: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        getImage(ImageSource.camera);
-                      },
-                      icon: const Icon(
-                        Icons.photo_camera_outlined,
-                        color: Color.fromARGB(255, 6, 29, 149),
-                      ),
-                      iconSize: 40,
-                    ),
-                    const Text('Camera',
-                        style: TextStyle(fontWeight: FontWeight.bold))
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          getImage(ImageSource.gallery);
-                        },
-                        icon: const Icon(Icons.photo_library_outlined,
-                            color: Color.fromARGB(255, 6, 29, 149)),
-                        iconSize: 35),
-                    const Text(
-                      'Gallery',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
+          Camera_Gallery(getImage),
           const SizedBox(
             height: 40,
           )
         ],
       )),
+    );
+  }
+
+  Container Camera_Gallery(Future<dynamic> getImage(ImageSource imageSource)) {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              IconButton(
+                onPressed: () {
+                  getImage(ImageSource.camera).then((value) => _callAPI());
+                  ;
+                },
+                icon: const Icon(
+                  Icons.photo_camera_outlined,
+                  color: Color.fromARGB(255, 6, 29, 149),
+                ),
+                iconSize: 40,
+              ),
+              const Text('Camera',
+                  style: TextStyle(fontWeight: FontWeight.bold))
+            ],
+          ),
+          Column(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    getImage(ImageSource.gallery);
+                  },
+                  icon: const Icon(Icons.photo_library_outlined,
+                      color: Color.fromARGB(255, 6, 29, 149)),
+                  iconSize: 35),
+              const Text(
+                'Gallery',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 
