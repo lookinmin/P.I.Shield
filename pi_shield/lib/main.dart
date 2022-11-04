@@ -11,7 +11,6 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'splash_screen.dart';
 import 'package:image/image.dart' as IMG;
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -71,26 +70,32 @@ class _UseCameraState extends State<UseCamera> {
   // }
 
   void _callAPI() async {
-  // final url = Uri.parse(uri);
-  // final response = await http.post(url, body: {
-  //   'img': '사진',
-  // });
+    // final url = Uri.parse(uri);
+    // final response = await http.post(url, body: {
+    //   'img': '사진',
+    // });
 
-  // print("response body : ${response.body}");
-  print("CALL API");
+    // print("response body : ${response.body}");
+    print("CALL API");
 
-  File imageFileList = File(_image!.path);
+    // File imageFileList = File(_image!.path);
 
-  var request = new http.MultipartRequest("POST", Uri.parse(유알엘));
+    var request = new http.MultipartRequest(
+        "POST",
+        Uri.parse(
+            'https://purple-poets-send-175-205-84-241.loca.lt/uploadfile/'));
 
-  request.fields['parameter'] = '보내고 싶은 파라미터';
+    String str = _image!.path;
+    var strSplit = str.split('/');
 
-  request.files.add(await http.MultipartFile.fromPath('imageFileList', _image!.path));
+    request.fields['file'] = _image!.path;
 
+    print('${strSplit.last}');
 
-  var response = await request.send();
-}
+    request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
 
+    var response = await request.send();
+  }
 
   @override
   Widget build(BuildContext context) {
