@@ -12,6 +12,7 @@ import 'dart:typed_data';
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+import 'splash_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -24,7 +25,9 @@ class MyApp extends StatelessWidget {
       title: 'CameraDemo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: UseCamera(),
+      initialRoute: '/',
+      routes: {"/": (context) => Splash()},
+      //home: UseCamera(),
     );
   }
 }
