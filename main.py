@@ -1,3 +1,5 @@
+import cv2
+import numpy as np
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 import easyocr
@@ -13,13 +15,21 @@ app = FastAPI()
 @app.get("/")
 def run():
     return FileResponse('index.html')
-
 # this needs to run only once to load the model into memory
 reader = easyocr.Reader(['ko', 'en'])
+
 def func(filenametemp):
     # 텍스트 찾는 AI
-    text_detect_result=reader.detect(filenametemp,min_size=3, text_threshold=0.001, low_text=0.4, link_threshold=0.2,
-                               width_ths=0.001)
+    text_detect_result = reader.detect(filenametemp, min_size=3, text_threshold=0.1, low_text=0.4, link_threshold=0.2,
+                               width_ths=0.5) #최소사이즈, 텍스트 최소인식률, 작아질수록 인식 업 , ,박스 합쳐지는 범위
+
+    # tempImg = cv2.imread(filenametemp)
+    # tempImg = cv2.dilate(tempImg, np.ones((1,1),np.uint8), iterations=1)
+    # tempImg = cv2.morphologyEx(tempImg, cv2.MORPH_OPEN, np.ones((2,2),np.uint8))
+    # tempImg = cv2.cvtColor(tempImg, cv2.COLOR_BGR2RGB)
+    # plt.imshow(tempImg)
+    # plt.show()
+
     # 찾은 텍스트를 txt 포맷으로 변경
     result = reader.recognize(filenametemp, text_detect_result[0][0],text_detect_result[1][0])
 
@@ -29,7 +39,7 @@ def func(filenametemp):
     address1 = '(([가-힣A-Za-z·\d~\-\.]{2,}(로|길).[\d]+)|([가-힣A-Za-z·\d~\-\.]+(읍|동)\s)[\d]+)'
     address2 = '(([가-힣A-Za-z·\d~\-\.]+(읍|동)\s)[\d-]+)|(([가-힣A-Za-z·\d~\-\.]+(읍|동)\s)[\d][^시]+)'
     phone = '(\d{2,3}[ ,-]-?\d{2,4}[ ,-]-?\d{4})'
-    email = '(([\w!-_\.])*@([\w!-_\.])*\.[\w]{2,3})'
+    email = '(([\w!-_\.])*@([\w!-_\.]))'
 
     img = Image.open(filenametemp)
     font = ImageFont.truetype('malgun.ttf', 50) #폰트 지정
@@ -55,7 +65,7 @@ def func(filenametemp):
         if re.match(registNum, str(i[1])) != None:
             mask = Image.new('L', img.size, 0)
             draw = ImageDraw.Draw(mask)
-            rounded_rectangle(draw, (x, y, x + w, y + h), rad=40, fill=255)
+            rounded_rectangle(draw, (x, y, x + w, y + h), rad=5, fill=255)
             # Blur image
             blurred = img.filter(ImageFilter.GaussianBlur(20))
             # Paste blurred region and save result
@@ -124,6 +134,5 @@ async def create_upload_file(file: UploadFile):
     temp_file = open(current_time+'.jpg','wb+')
     temp_file.write(file.file.read())
     func(current_time+'.jpg')
-
 
     return {"filename": file.filename+current_time+'.jpg'}
