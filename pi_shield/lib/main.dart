@@ -12,6 +12,7 @@ import 'dart:typed_data';
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+import 'splash_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -24,7 +25,9 @@ class MyApp extends StatelessWidget {
       title: 'CameraDemo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: UseCamera(),
+      initialRoute: '/',
+      routes: {"/": (context) => Splash()},
+      //home: UseCamera(),
     );
   }
 }
@@ -37,11 +40,12 @@ class UseCamera extends StatefulWidget {
 class _UseCameraState extends State<UseCamera> {
   File? _image;
   final picker = ImagePicker();
+  int ratioMode = 0;
 
   _save(BuildContext context, File? image) async {
     var now = DateTime.now();
     String formatDate = DateFormat('yyyyMMdd_HHmmss').format(now);
-    final bytes = await image!.readAsBytes();
+    Uint8List bytes = await image!.readAsBytes();
     final result = await ImageGallerySaver.saveImage(
       bytes,
       quality: 60,
@@ -118,19 +122,25 @@ class _UseCameraState extends State<UseCamera> {
                   ? Row(
                       children: [
                         TextButton(
-                            onPressed: () {},
+                            onPressed: () => setState(() {
+                                  ratioMode = 1;
+                                }),
                             child: const Text(
-                              '9:16',
+                              '16:9',
                               style: TextStyle(fontSize: 15),
                             )),
                         TextButton(
-                            onPressed: () {},
+                            onPressed: () => setState(() {
+                                  ratioMode = 2;
+                                }),
                             child: const Text(
-                              '3:4',
+                              '4:3',
                               style: TextStyle(fontSize: 15),
                             )),
                         TextButton(
-                            onPressed: () {},
+                            onPressed: () => setState(() {
+                                  ratioMode = 3;
+                                }),
                             child: const Text(
                               '1:1',
                               style: TextStyle(fontSize: 15),
@@ -187,7 +197,17 @@ class _UseCameraState extends State<UseCamera> {
         child: Image.asset('images/logo.png'),
       );
     } else {
-      return Image.file(_image!);
+      return Container(
+          color: const Color.fromARGB(255, 232, 232, 232),
+          width: size.width,
+          height: ratioMode == 0
+              ? size * 0.5
+              : (ratioMode == 1
+                  ? size.width * 16 / 9
+                  : (ratioMode == 2 ? size.width * 4 / 3 : size.width)),
+          // height: ratioMode == 0 ? size.height * 0.5 : size.width * 9 / 16,
+          // height: size.height * 0.5,
+          child: Image.file(_image!));
     }
   }
 }
