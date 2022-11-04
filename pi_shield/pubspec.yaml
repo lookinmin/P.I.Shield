@@ -39,6 +39,11 @@ dependencies:
   path_provider: ^2.0.11
   path: ^1.8.2
   image_picker: ^0.8.6
+  image_gallery_saver: ^1.7.1
+  dio: ^4.0.6
+  cached_network_image: ^3.2.2
+  timer_builder: ^2.0.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
