@@ -89,6 +89,6 @@ async def create_upload_file(file: UploadFile):
 
     return {"fileurl": str(hashed_name)+'.jpg'}
 
-@app.get("/{filename}")
+@app.get("/downloadfile/{filename}")
 async def downloadfile(filename:str):
     return FileResponse(f"image/{filename}")
