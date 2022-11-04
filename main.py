@@ -1,13 +1,11 @@
-import cv2
-import numpy as np
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 import easyocr
-import matplotlib.pyplot as plt
 from PIL import ImageFont, ImageDraw, Image, ImageFilter
 import re
 from fastapi import UploadFile
 from datetime import datetime
+import hashlib
 # async / await 비동기 처리가능
 app = FastAPI()
 
@@ -78,16 +76,19 @@ def func(filenametemp):
     blurred = img.filter(ImageFilter.GaussianBlur(20))
     # Paste blurred region and save result
     img.paste(blurred, mask=mask)
-    img.save('modify'+filenametemp,'jpeg')
+    img.save(filenametemp,'jpeg')
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
     now = datetime.now()
     current_time = now.strftime("%d%H%M%S")
-    print(current_time)
-    temp_file = open(current_time+'.jpg','wb+')
+    hashed_name=hashlib.md5(current_time.encode('utf-8')).hexdigest()
+    temp_file = open('image/'+str(hashed_name)+'.jpg','wb+')
     temp_file.write(file.file.read())
-    func(current_time+'.jpg')
+    func('image/'+str(hashed_name)+'.jpg')
 
+    return {"fileurl": str(hashed_name)+'.jpg'}
 
-    return {"filename": file.filename+current_time+'.jpg'}
+@app.get("/downloadfile/{filename}")
+async def downloadfile(filename:str):
+    return FileResponse(f"image/{filename}")
