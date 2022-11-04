@@ -30,11 +30,11 @@ def func(filenametemp):
     result = reader.recognize(filenametemp, text_detect_result[0][0],text_detect_result[1][0],batch_size=4)
     print("AI 작업 완료")
 
-    registNum = '(\d{6}[ ,-]-?[1-4]\d{6})|(\d{6}[ ,-]?[1-4])'
+    registNum = '(\d{6}[ ,-]-?[1-4]\d{7})|(\d{6}[ ,-]?[1-4])'
     name = '(^[가-힣]{2,3}$)'
     account = '([0-9,\-]{3,9}\-[0-9,\-]{2,6}\-[0-9,\-])'
-    address1 = '(([가-힣A-Za-z·\d~\-\.\[\]\(\)]{2,}(로|길).[\d]+)|([가-힣A-Za-z·\d~\-\.\[\]\(\)]+(읍|동)\s)[\d]+)'
-    address2 = '(([가-힣A-Za-z·\d~\-\.\[\]\(\)]+(읍|동)\s)[\d-]+)|(([가-힣A-Za-z·\d~\-\.\[\]\(\)]+(읍|동)\s)[\d][^시]+)'
+    address1 = '(([가-힣]+(시|도)|[서울]|[인천]|[대구]|[광주]|[부산]|[울산])( |)[가-힣]+(시|군|구))'
+    address2 = '(([가-힣]+(d|d(,|.)d|)+(읍|면|동|가|리))(^구|)((d(~|-)d|d)(가|리|)|))([ ](산(d(~|-)d|d))|)|(([가-힣]|(d(~|-)d)|d)+(로|길))'
     phone = '([O\d]{2,3}[ ,-]-?[O|\d]{2,4}[ ,-]-?[O|\d]{4})'
     email = '(([\w!-_\.])*@([\w!-_\.]))'
     carNum1 = '^[가-힣]{2}\d{2}[가-힣]{1}\d{4}$'
@@ -81,7 +81,7 @@ def func(filenametemp):
                         temp_draw.line([temp_xy[k%4], temp_xy[(k+1)%4]], fill="blue", width=1)
                     # draw.text((int((x + x + w) / 2), y - 2), str(i[1]), font=font, fill='red')
     # Blur image
-    blurred = img.filter(ImageFilter.GaussianBlur(20))
+    blurred = img.filter(ImageFilter.GaussianBlur(30))
     # Paste blurred region and save result
     img.paste(blurred, mask=mask)
     img.save(filenametemp,'jpeg')
