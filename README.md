@@ -1,6 +1,8 @@
 # P.I.Shield
 
-## 2022 충청권 ICT 메이커톤 본선 진출작 P.I.Shield
+## 2022 충청권 ICT 메이커톤 우수상 수상작 P.I.Shield
+
+## 상금 2,000,000원 / 2등
 
 ### TeamName : Ping-pong
 
