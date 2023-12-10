@@ -20,7 +20,7 @@ TeamMate : 서종원 (충북대학교 3학년 소프트웨어학과 재학)
    - Image에서 전화번호, 주소 등의 개인정보를 추출하여 개인정보로 판단되는 부분을 모자이크 후 Image 재생산
 
 ### 2. Project 의의
-   - 개인정보 유출로 인한 피해를 막기 위한 기술의 개발 및 RestAPI를 통한 배포
+   - 개인정보 유출로 인한 피해를 막기 위한 기술의 개발 및 RESTfulAPI를 통한 배포
 
 ### 3. Project 목표
    - Image로 부터 일어나는 개인정보 유출 피해의 최소화
@@ -31,4 +31,10 @@ TeamMate : 서종원 (충북대학교 3학년 소프트웨어학과 재학)
    - SNOW, SODA와 같은 카메라 어플
 
 ### 5. Project 사용 기술 및 Framework
-   - Flutter, OpenCV, FastAPI
+   - Flutter, OpenCV, FastAPI, Dart
+
+<hr/>
+
+## AWARDS
+<img src="./img/award_ict.jpg" width="70%">
+
