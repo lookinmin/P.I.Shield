@@ -35,6 +35,14 @@ TeamMate : 서종원 (충북대학교 3학년 소프트웨어학과 재학)
 
 <hr/>
 
+## Project 결과화면
+<img src="./img/img1.jpg" width="40%">
+<img src="./img/img2.jpg" width="40%">
+<img src="./img/img3.jpg" width="40%">
+<img src="./img/img4.jpg" width="40%">
+
+<hr/>
+
 ## AWARDS
 <img src="./img/award_ict.jpg" width="70%">
 
