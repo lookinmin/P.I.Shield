@@ -31,7 +31,7 @@ TeamMate : 서종원 (충북대학교 3학년 소프트웨어학과 재학)
    - SNOW, SODA와 같은 카메라 어플
 
 ### 5. Project 사용 기술 및 Framework
-   - Flutter, OpenCV, FastAPI, Dart
+   - [EasyOCR](https://github.com/JaidedAI/EasyOCR?tab=readme-ov-file), Flutter, OpenCV, FastAPI, Dart
 
 <hr/>
 
